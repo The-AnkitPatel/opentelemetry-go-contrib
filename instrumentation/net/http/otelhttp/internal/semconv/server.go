@@ -365,6 +365,15 @@ func (HTTPServer) Route(route string) attribute.KeyValue {
 	return semconv.HTTPRoute(route)
 }
 
+// RouteFromRequest returns the route attribute from the request's pattern, if matched.
+func (n HTTPServer) RouteFromRequest(r *http.Request) (attribute.KeyValue, bool) {
+	route := httpRoute(r.Pattern)
+	if route == "" {
+		return attribute.KeyValue{}, false
+	}
+	return n.Route(route), true
+}
+
 func (n HTTPServer) MetricAttributes(server string, req *http.Request, statusCode int, route string, additionalAttributes []attribute.KeyValue) []attribute.KeyValue {
 	num := len(additionalAttributes) + 2
 	// server.address and server.port are Opt-In for HTTP server metrics:
