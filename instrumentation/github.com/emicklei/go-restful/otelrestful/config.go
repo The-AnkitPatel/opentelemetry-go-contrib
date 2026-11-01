@@ -32,10 +32,10 @@ func (o optionFunc) apply(c *config) {
 // WithPublicEndpoint configures the Handler to link the span with an incoming
 // span context. If this option is not provided, then the association is a child
 // association instead of a link.
+//
+// Deprecated: Use [WithPublicEndpointFn] instead.
 func WithPublicEndpoint() Option {
-	return optionFunc(func(c *config) {
-		c.PublicEndpoint = true
-	})
+	return WithPublicEndpointFn(func(*http.Request) bool { return true })
 }
 
 // WithPropagators specifies propagators to use for extracting
@@ -63,7 +63,6 @@ func WithTracerProvider(provider oteltrace.TracerProvider) Option {
 // configuring the Handler to link the span with an incoming span context. If
 // this option is not provided or returns false, then the association is a
 // child association instead of a link.
-// Note: [WithPublicEndpoint] takes precedence over WithPublicEndpointFn.
 func WithPublicEndpointFn(fn func(*http.Request) bool) Option {
 	return optionFunc(func(c *config) {
 		c.PublicEndpointFn = fn
